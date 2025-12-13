@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Black Hole Visualization</title>
+
+<style>
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: rgba(25,25,25,1);
+    overflow: hidden;
+}
+
+/* Container */
+#blackhole {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    display: flex;
+}
+
+/* ENTER button */
+.centerHover {
+    width: 255px;
+    height: 255px;
+    background-color: transparent;
+    border-radius: 50%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-top: -128px;
+    margin-left: -128px;
+    z-index: 2;
+    cursor: pointer;
+    line-height: 255px;
+    text-align: center;
+    transition: all 500ms;
+}
+
+.centerHover.open {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.centerHover span {
+    color: #666;
+    font-family: serif;
+    font-size: 18px;
+    position: relative;
+    transition: all 500ms;
+}
+
+.centerHover span:before,
+.centerHover span:after {
+    content: '';
+    display: inline-block;
+    height: 1px;
+    width: 16px;
+    background-color: #666;
+    transition: all 500ms;
+    margin-bottom: 4px;
+}
+
+.centerHover span:before { margin-right: 12px; }
+.centerHover span:after  { margin-left: 12px; }
+
+.centerHover:hover span,
+.centerHover:hover span:before,
+.centerHover:hover span:after {
+    color: #DDD;
+    background-color: #DDD;
+}
+
+/* Apology text */
+#message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: serif;
+    font-size: 28px;
+    color: #ddd;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.5s ease;
+    z-index: 3;
+}
+
+#message.show {
+    opacity: 1;
+}
+
+canvas {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+}
+</style>
+</head>
+
+<body>
+
+<div id="blackhole">
+    <div class="centerHover"><span>ENTER</span></div>
+    <div id="message"></div>
+</div>
+
+<script>
+function blackhole(element) {
+    const container = document.querySelector(element);
+    const h = container.offsetHeight;
+    const w = container.offsetWidth;
+
+    const cw = w;
+    const ch = h;
+    const maxorbit = 255;
+    const centery = ch / 2;
+    const centerx = cw / 2;
+
+    const startTime = Date.now();
+    let currentTime = 0;
+
+    const stars = [];
+    let collapse = false;
+    let expanse = false;
+    let returning = false;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = cw;
+    canvas.height = ch;
+    container.appendChild(canvas);
+
+    const context = canvas.getContext("2d");
+    context.globalCompositeOperation = "multiply";
+
+    function setDPI(canvas, dpi) {
+        const scale = dpi / 96;
+        canvas.width *= scale;
+        canvas.height *= scale;
+        canvas.style.width = cw + "px";
+        canvas.style.height = ch + "px";
+        context.scale(scale, scale);
+    }
+
+    function rotate(cx, cy, x, y, angle) {
+        const cos = Math.cos(angle);
+        const sin = Math.sin(angle);
+        return [
+            cos * (x - cx) + sin * (y - cy) + cx,
+            cos * (y - cy) - sin * (x - cx) + cy
+        ];
+    }
+
+    setDPI(canvas, 192);
+
+    class Star {
+        constructor() {
+            const rands = [
+                Math.random() * (maxorbit / 2) + 1,
+                Math.random() * (maxorbit / 2) + maxorbit
+            ];
+
+            this.orbital = rands.reduce((a,b)=>a+b)/rands.length;
+            this.x = centerx;
+            this.y = centery + this.orbital;
+            this.yOrigin = this.y;
+            this.originalY = this.y;
+
+            this.speed = (Math.random() * 2.5 + 1.5) * Math.PI / 180;
+            this.startRotation = Math.random() * Math.PI * 2;
+            this.rotation = 0;
+
+            this.id = stars.length;
+            this.color = `rgba(255,255,255,${1 - this.orbital/255})`;
+
+            this.hoverPos = centery + maxorbit/2;
+            this.expansePos = centery - (this.id % 100) * 10;
+
+            this.prevX = this.x;
+            this.prevY = this.y;
+            this.prevR = this.startRotation;
+
+            stars.push(this);
+        }
+
+        draw() {
+            this.rotation = this.startRotation + currentTime * this.speed;
+
+            if (!expanse && !returning) {
+                this.y += (collapse ? this.hoverPos : this.yOrigin - this.y) / 15;
+            } else if (expanse && !returning) {
+                this.y += (this.expansePos - this.y) / 80;
+            } else if (returning) {
+                this.y += (this.originalY - this.y) / 50;
+            }
+
+            context.beginPath();
+            const old = rotate(centerx, centery, this.prevX, this.prevY, -this.prevR);
+            context.moveTo(old[0], old[1]);
+            context.save();
+            context.translate(centerx, centery);
+            context.rotate(this.rotation);
+            context.translate(-centerx, -centery);
+            context.strokeStyle = this.color;
+            context.lineTo(this.x, this.y);
+            context.stroke();
+            context.restore();
+
+            this.prevX = this.x;
+            this.prevY = this.y;
+            this.prevR = this.rotation;
+        }
+    }
+
+    for (let i = 0; i < 2500; i++) new Star();
+
+    const centerHover = document.querySelector('.centerHover');
+    const message = document.getElementById('message');
+
+    centerHover.addEventListener('click', function () {
+        const name = prompt("What is your name?");
+        if (!name) return;
+
+        message.textContent = `I am sorry ${name}.`;
+        message.classList.add('show');
+
+        collapse = false;
+        expanse = true;
+        returning = false;
+        this.classList.add('open');
+
+        setTimeout(() => message.classList.remove('show'), 6000);
+
+        setTimeout(() => {
+            expanse = false;
+            returning = true;
+            setTimeout(() => {
+                returning = false;
+                this.classList.remove('open');
+            }, 8000);
+        }, 25000);
+    });
+
+    centerHover.addEventListener('mouseover', () => !expanse && (collapse = true));
+    centerHover.addEventListener('mouseout',  () => !expanse && (collapse = false));
+
+    function loop() {
+        currentTime = (Date.now() - startTime) / 50;
+        context.fillStyle = 'rgba(25,25,25,0.2)';
+        context.fillRect(0, 0, cw, ch);
+        stars.forEach(s => s.draw());
+        requestAnimationFrame(loop);
+    }
+
+    loop();
+}
+
+document.addEventListener('DOMContentLoaded', () => blackhole('#blackhole'));
+</script>
+
+</body>
+</html>
