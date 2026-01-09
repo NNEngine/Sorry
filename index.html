@@ -1,269 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Black Hole Visualization</title>
-
-<style>
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    background-color: rgba(25,25,25,1);
-    overflow: hidden;
-}
-
-/* Container */
-#blackhole {
-    height: 100%;
-    width: 100%;
-    position: relative;
-    display: flex;
-}
-
-/* ENTER button */
-.centerHover {
-    width: 255px;
-    height: 255px;
-    background-color: transparent;
-    border-radius: 50%;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    margin-top: -128px;
-    margin-left: -128px;
-    z-index: 2;
-    cursor: pointer;
-    line-height: 255px;
-    text-align: center;
-    transition: all 500ms;
-}
-
-.centerHover.open {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.centerHover span {
-    color: #666;
-    font-family: serif;
-    font-size: 18px;
-    position: relative;
-    transition: all 500ms;
-}
-
-.centerHover span:before,
-.centerHover span:after {
-    content: '';
-    display: inline-block;
-    height: 1px;
-    width: 16px;
-    background-color: #666;
-    transition: all 500ms;
-    margin-bottom: 4px;
-}
-
-.centerHover span:before { margin-right: 12px; }
-.centerHover span:after  { margin-left: 12px; }
-
-.centerHover:hover span,
-.centerHover:hover span:before,
-.centerHover:hover span:after {
-    color: #DDD;
-    background-color: #DDD;
-}
-
-/* Apology text */
-#message {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-family: serif;
-    font-size: 28px;
-    color: #ddd;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 1.5s ease;
-    z-index: 3;
-}
-
-#message.show {
-    opacity: 1;
-}
-
-canvas {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    height: 100%;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I'm Sorry, Harshita ❤️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Quicksand:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7e2 100%);
+            overflow-x: hidden;
+        }
+        .cursive {
+            font-family: 'Dancing Script', cursive;
+        }
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .heart-rain {
+            position: fixed;
+            top: -10%;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
 </head>
+<body class="min-h-screen flex flex-col items-center">
 
-<body>
+    <!-- Hero Section -->
+    <header class="w-full max-w-2xl px-6 py-12 text-center z-10">
+        <h1 class="text-5xl md:text-6xl text-pink-600 font-bold mb-4 cursive floating">Hey Harshita...</h1>
+        <p class="text-xl text-gray-700 italic">I know I messed up, and I'm really sorry.</p>
+    </header>
 
-<div id="blackhole">
-    <div class="centerHover"><span>ENTER</span></div>
-    <div id="message"></div>
-</div>
+    <!-- The Interactive Apology Box -->
+    <main class="w-full max-w-md px-6 z-10">
+        <div id="apology-card" class="bg-white rounded-3xl shadow-2xl p-8 text-center border-4 border-pink-200 transition-all duration-500">
+            <div id="initial-state">
+                <div class="text-6xl mb-4">🥺</div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Will you forgive me?</h2>
+                <div class="flex justify-center gap-4 mt-8 relative h-16">
+                    <button id="yesBtn" onclick="forgive()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-8 rounded-full shadow-lg transform transition active:scale-95">
+                        Yes
+                    </button>
+                    <button id="noBtn" onmouseover="moveButton()" onclick="moveButton()" class="bg-red-500 text-white font-bold py-2 px-8 rounded-full shadow-lg absolute transition-all duration-200">
+                        No
+                    </button>
+                </div>
+            </div>
 
-<script>
-function blackhole(element) {
-    const container = document.querySelector(element);
-    const h = container.offsetHeight;
-    const w = container.offsetWidth;
+            <!-- Success State (Hidden initially) -->
+            <div id="success-state" class="hidden">
+                <div class="text-6xl mb-4">💖</div>
+                <h2 class="text-3xl font-bold text-pink-600 mb-2">Yay! Best Day Ever!</h2>
+                <p class="text-gray-600 mb-4">I promise to be better and make you smile every day. I love you, Harshita!</p>
+                <div class="bg-pink-50 p-4 rounded-xl italic text-sm text-pink-700">
+                    "I love you not only for what you are, but for what I am when I am with you."
+                </div>
+            </div>
+        </div>
 
-    const cw = w;
-    const ch = h;
-    const maxorbit = 255;
-    const centery = ch / 2;
-    const centerx = cw / 2;
+        <!-- Why You're Special Section -->
+        <section class="mt-12 space-y-4">
+            <h3 class="text-center text-pink-500 font-bold text-xl uppercase tracking-widest">Why I Love You</h3>
+            <div class="grid grid-cols-1 gap-4">
+                <div class="bg-white/80 backdrop-blur p-4 rounded-2xl shadow-sm flex items-center gap-4">
+                    <span class="text-2xl">✨</span>
+                    <p class="text-gray-700">Your smile literally lights up my entire world.</p>
+                </div>
+                <div class="bg-white/80 backdrop-blur p-4 rounded-2xl shadow-sm flex items-center gap-4">
+                    <span class="text-2xl">🧸</span>
+                    <p class="text-gray-700">The way you handle my silliness with so much patience.</p>
+                </div>
+                <div class="bg-white/80 backdrop-blur p-4 rounded-2xl shadow-sm flex items-center gap-4">
+                    <span class="text-2xl">❤️</span>
+                    <p class="text-gray-700">Because there's no "me" without "you," Harshita.</p>
+                </div>
+            </div>
+        </section>
 
-    const startTime = Date.now();
-    let currentTime = 0;
+        <!-- A Little Note -->
+        <section class="my-12 p-6 bg-pink-600 text-white rounded-3xl shadow-xl transform -rotate-2">
+            <h3 class="cursive text-3xl mb-2">My Promise</h3>
+            <p class="text-sm leading-relaxed">
+                I know saying sorry isn't always enough, so I'm promising to listen more, care more, and never let a day go by without letting you know how much you mean to me. Please let's talk?
+            </p>
+        </section>
+    </main>
 
-    const stars = [];
-    let collapse = false;
-    let expanse = false;
-    let returning = false;
+    <footer class="pb-8 text-pink-400 text-sm">
+        Made with ❤️ for Harshita
+    </footer>
 
-    const canvas = document.createElement('canvas');
-    canvas.width = cw;
-    canvas.height = ch;
-    container.appendChild(canvas);
-
-    const context = canvas.getContext("2d");
-    context.globalCompositeOperation = "multiply";
-
-    function setDPI(canvas, dpi) {
-        const scale = dpi / 96;
-        canvas.width *= scale;
-        canvas.height *= scale;
-        canvas.style.width = cw + "px";
-        canvas.style.height = ch + "px";
-        context.scale(scale, scale);
-    }
-
-    function rotate(cx, cy, x, y, angle) {
-        const cos = Math.cos(angle);
-        const sin = Math.sin(angle);
-        return [
-            cos * (x - cx) + sin * (y - cy) + cx,
-            cos * (y - cy) - sin * (x - cx) + cy
-        ];
-    }
-
-    setDPI(canvas, 192);
-
-    class Star {
-        constructor() {
-            const rands = [
-                Math.random() * (maxorbit / 2) + 1,
-                Math.random() * (maxorbit / 2) + maxorbit
-            ];
-
-            this.orbital = rands.reduce((a,b)=>a+b)/rands.length;
-            this.x = centerx;
-            this.y = centery + this.orbital;
-            this.yOrigin = this.y;
-            this.originalY = this.y;
-
-            this.speed = (Math.random() * 2.5 + 1.5) * Math.PI / 180;
-            this.startRotation = Math.random() * Math.PI * 2;
-            this.rotation = 0;
-
-            this.id = stars.length;
-            this.color = `rgba(255,255,255,${1 - this.orbital/255})`;
-
-            this.hoverPos = centery + maxorbit/2;
-            this.expansePos = centery - (this.id % 100) * 10;
-
-            this.prevX = this.x;
-            this.prevY = this.y;
-            this.prevR = this.startRotation;
-
-            stars.push(this);
+    <script>
+        // Move the "No" button so she can't click it easily
+        function moveButton() {
+            const btn = document.getElementById('noBtn');
+            const card = document.getElementById('apology-card');
+            
+            // Generate random positions within the card container
+            const maxX = card.clientWidth - btn.clientWidth - 20;
+            const maxY = card.clientHeight - btn.clientHeight - 20;
+            
+            const x = Math.random() * maxX;
+            const y = Math.random() * maxY;
+            
+            btn.style.left = x + 'px';
+            btn.style.top = y + 'px';
         }
 
-        draw() {
-            this.rotation = this.startRotation + currentTime * this.speed;
+        // Handle the "Yes" click
+        function forgive() {
+            document.getElementById('initial-state').classList.add('hidden');
+            document.getElementById('success-state').classList.remove('hidden');
+            startHeartRain();
+        }
 
-            if (!expanse && !returning) {
-                this.y += (collapse ? this.hoverPos : this.yOrigin - this.y) / 15;
-            } else if (expanse && !returning) {
-                this.y += (this.expansePos - this.y) / 80;
-            } else if (returning) {
-                this.y += (this.originalY - this.y) / 50;
+        // Visual celebration
+        function startHeartRain() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.innerHTML = '❤️';
+                    heart.className = 'heart-rain text-2xl';
+                    heart.style.left = Math.random() * 100 + 'vw';
+                    heart.style.animation = `fall ${Math.random() * 2 + 3}s linear forwards`;
+                    document.body.appendChild(heart);
+                }, i * 100);
             }
-
-            context.beginPath();
-            const old = rotate(centerx, centery, this.prevX, this.prevY, -this.prevR);
-            context.moveTo(old[0], old[1]);
-            context.save();
-            context.translate(centerx, centery);
-            context.rotate(this.rotation);
-            context.translate(-centerx, -centery);
-            context.strokeStyle = this.color;
-            context.lineTo(this.x, this.y);
-            context.stroke();
-            context.restore();
-
-            this.prevX = this.x;
-            this.prevY = this.y;
-            this.prevR = this.rotation;
         }
-    }
 
-    for (let i = 0; i < 2500; i++) new Star();
-
-    const centerHover = document.querySelector('.centerHover');
-    const message = document.getElementById('message');
-
-    centerHover.addEventListener('click', function () {
-        const name = prompt("What is your name?");
-        if (!name) return;
-
-        message.textContent = `I am sorry ${name}.`;
-        message.classList.add('show');
-
-        collapse = false;
-        expanse = true;
-        returning = false;
-        this.classList.add('open');
-
-        setTimeout(() => message.classList.remove('show'), 6000);
-
-        setTimeout(() => {
-            expanse = false;
-            returning = true;
-            setTimeout(() => {
-                returning = false;
-                this.classList.remove('open');
-            }, 8000);
-        }, 25000);
-    });
-
-    centerHover.addEventListener('mouseover', () => !expanse && (collapse = true));
-    centerHover.addEventListener('mouseout',  () => !expanse && (collapse = false));
-
-    function loop() {
-        currentTime = (Date.now() - startTime) / 50;
-        context.fillStyle = 'rgba(25,25,25,0.2)';
-        context.fillRect(0, 0, cw, ch);
-        stars.forEach(s => s.draw());
-        requestAnimationFrame(loop);
-    }
-
-    loop();
-}
-
-document.addEventListener('DOMContentLoaded', () => blackhole('#blackhole'));
-</script>
-
+        // Heart animation style
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fall {
+                to {
+                    transform: translateY(110vh) rotate(360deg);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>
